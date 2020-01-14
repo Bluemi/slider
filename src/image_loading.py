@@ -13,6 +13,8 @@ START_POSITION = [50, 50]
 PREVIEW_X_DIFF = DIRECTORY_PREVIEW_SIZE[0] + 20
 PREVIEW_Y_DIFF = DIRECTORY_PREVIEW_SIZE[1] + 20
 
+IMAGE_EXTENSIONS = ['jpg', 'JPG', 'png', 'PNG']
+
 
 class ImageBuffer:
     def __init__(self, previews):
@@ -110,3 +112,9 @@ class DirectoryPreview:
         if len(files) != 1:
             raise ValueError('Found {} videos in directory: {}'.format(len(files), self.subdir))
         return files[0]
+
+    def get_images(self):
+        files = []
+        for img_ext in IMAGE_EXTENSIONS:
+            files.extend(glob.glob(os.path.join(self.subdir, '*.{}'.format(img_ext))))
+        return files

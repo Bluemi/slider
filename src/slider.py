@@ -9,6 +9,7 @@ BACKGROUND_IMAGE = 'res/background.jpg'
 BORDER_IMAGE_SELECTED = 'res/border_selected.png'
 BORDER_IMAGE_NOT_SELECTED = 'res/border_not_selected.png'
 ROOT_DIR = 'res'
+IMAGE_SHOW_DURATION = 5
 
 
 def main():
@@ -94,7 +95,9 @@ class Slider:
         if selected_preview is None:
             return
         if selected_preview.directory_type == image_loading.DirectoryType.IMAGE_DIRECTORY:
-            self._play_item = PlayItem(['slideshow', '-advance', '5', selected_preview.subdir], 5)
+            command = ['vlc', '--fullscreen', '--play-and-exit', '--rate', str(10 / IMAGE_SHOW_DURATION)]
+            command.extend(selected_preview.get_images())
+            self._play_item = PlayItem(command)
 
             # subprocess.run(['slideshow', selected_preview.subdir])
         elif selected_preview.directory_type == image_loading.DirectoryType.VIDEO_DIRECTORY:
