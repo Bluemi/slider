@@ -1,3 +1,4 @@
+import glob
 import os
 from enum import Enum
 
@@ -103,3 +104,9 @@ class DirectoryPreview:
         preview = pygame.transform.scale(preview, DIRECTORY_PREVIEW_SIZE)
 
         return DirectoryPreview(subdir, preview, directory_type)
+
+    def get_video_file(self):
+        files = glob.glob(os.path.join(self.subdir, '*.mp4'))
+        if len(files) != 1:
+            raise ValueError('Found {} videos in directory: {}'.format(len(files), self.subdir))
+        return files[0]

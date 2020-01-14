@@ -16,6 +16,20 @@ def main():
     slider.run()
 
 
+class PlayItem:
+    def __init__(self, command, timeout=None):
+        """
+        Creates a new PlayItem.
+
+        :param command: The command to execute
+        :type command: list[str]
+        :param timeout: The timeout for the command. If None, no timeout is supplied
+        :type timeout: int or None
+        """
+        self.command = command
+        self.timeout = timeout
+
+
 class Slider:
     def __init__(self, root_directory):
         self._image_buffer = image_loading.ImageBuffer.from_root_dir(root_directory)
@@ -80,14 +94,19 @@ class Slider:
         if selected_preview is None:
             return
         if selected_preview.directory_type == image_loading.DirectoryType.IMAGE_DIRECTORY:
-            self._play_item = ['slideshow', '-advance', '5', selected_preview.subdir]
+            self._play_item = PlayItem(['slideshow', '-advance', '5', selected_preview.subdir], 5)
 
             # subprocess.run(['slideshow', selected_preview.subdir])
         elif selected_preview.directory_type == image_loading.DirectoryType.VIDEO_DIRECTORY:
-            self._play_item = ['vlc', selected_preview.subdir]
+            self._play_item = PlayItem(['vlc', '--fullscreen', '--play-and-exit', selected_preview.get_video_file()])
 
     def play_item(self):
-        subprocess.run(self._play_item)
+        try:
+            subprocess.run(self._play_item.command, timeout=self._play_item.timeout)
+        except subprocess.TimeoutExpired:
+            pass
+        except Exception as e:
+            print('Exception occurred while running "{}":\n{}'.format(self._play_item.command, str(e)))
         self._play_item = None
 
 
