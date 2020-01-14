@@ -24,7 +24,7 @@ class ImageBuffer:
         """
         self.previews = previews
 
-    def set_preview_positions(self):
+    def set_preview_rects(self):
         """
         Sets the position attribute for the previews
 
@@ -32,7 +32,7 @@ class ImageBuffer:
         """
         position = START_POSITION
         for preview in self.previews.values():
-            preview.position = copy.copy(position)
+            preview.rect = pygame.Rect(position, DIRECTORY_PREVIEW_SIZE)
 
             position[0] += PREVIEW_X_DIFF
             if position[0] + PREVIEW_X_DIFF > pygame.display.get_surface().get_size()[0]:
@@ -74,8 +74,7 @@ class DirectoryPreview:
         self.subdir = subdir
         self.preview = preview
         self.directory_type = directory_type
-        self.position = (0, 0)
-        self.size = DIRECTORY_PREVIEW_SIZE
+        self.rect = None
 
     @staticmethod
     def from_subdir(subdir):

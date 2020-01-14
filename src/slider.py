@@ -26,7 +26,7 @@ class Slider:
     def start_screen(self):
         screen = pygame.display.set_mode(flags=pygame.FULLSCREEN | pygame.DOUBLEBUF)
 
-        self._image_buffer.set_preview_positions()
+        self._image_buffer.set_preview_rects()
 
         running = True
         while running:
@@ -43,14 +43,8 @@ class Slider:
 
             screen.blit(self._background_image, self._background_image.get_rect())
 
-            index = 0
             for directory_preview in self._image_buffer.previews.values():
-                print('position:', directory_preview.position, 'index:', index)
-                index += 1
-                screen.blit(
-                    directory_preview.preview,
-                    directory_preview.preview.get_rect().move(directory_preview.position)
-                )
+                screen.blit(directory_preview.preview, directory_preview.rect)
             pygame.display.flip()
 
             time.sleep(0.1)
