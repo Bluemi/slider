@@ -84,7 +84,7 @@ class Slider:
 
                 screen.blit(directory_preview.preview, directory_preview.rect)
 
-            if mouse_clicked:
+            if mouse_clicked and (selected_preview is not None):
                 self.apply_selected_preview(selected_preview)
 
             pygame.display.flip()
@@ -92,20 +92,40 @@ class Slider:
             time.sleep(0.1)
 
     def apply_selected_preview(self, selected_preview):
-        if selected_preview is None:
-            return
         if selected_preview.directory_type == image_loading.DirectoryType.IMAGE_DIRECTORY:
-            command = ['vlc', '--fullscreen', '--play-and-exit', '--rate', str(10 / IMAGE_SHOW_DURATION)]
+            command = [
+                'vlc',
+                '--fullscreen',
+                '--play-and-exit',
+                '--rate', str(10 / IMAGE_SHOW_DURATION),
+                '--key-leave-fullscreen', 'Undefined',
+                '--key-quit', 'Esc',
+            ]
             command.extend(selected_preview.get_images())
             self._play_item = PlayItem(command)
-
-            # subprocess.run(['slideshow', selected_preview.subdir])
         elif selected_preview.directory_type == image_loading.DirectoryType.VIDEO_DIRECTORY:
-            self._play_item = PlayItem(['vlc', '--fullscreen', '--play-and-exit', selected_preview.get_video_file()])
+            command = [
+                'vlc',
+                '--fullscreen',
+                '--play-and-exit',
+                '--key-nav-left', 'Undefined',
+                '--key-jump-extrashort', 'Left',
+                '--key-nav-right', 'Undefined',
+                '--key-jump+extrashort', 'Right',
+                '--key-leave-fullscreen', 'Undefined',
+                '--key-quit', 'Esc',
+                selected_preview.get_video_file()
+            ]
+            self._play_item = PlayItem(command)
 
     def play_item(self):
         try:
-            subprocess.run(self._play_item.command, timeout=self._play_item.timeout)
+            subprocess.run(
+                self._play_item.command,
+                timeout=self._play_item.timeout,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
         except subprocess.TimeoutExpired:
             pass
         except Exception as e:
